@@ -1,20 +1,13 @@
-from pyspark.sql import SparkSession
 from pyspark.sql.window import Window
 from pyspark.sql import functions as f
 
 
-spark = SparkSession.builder \
-        .master("local[*]") \
-        .appName("Films") \
-        .getOrCreate()
-
-
-def window(column):
+def window(column, factor_first):
     """
     Make standart window function
     """
-    return Window.partitionBy(column)\
-        .orderBy(f.col('averageRating').desc(),
+    return Window.partitionBy(column) \
+        .orderBy(f.col(factor_first).desc(),
                  f.col('numVotes').desc())
 
 
@@ -29,13 +22,12 @@ def standart_filter(left_df, right_df):
     """
     Make join and filter by numVotes, titleType
     """
-    return left_df.join(right_df, left_df.tconst == right_df.tconst) \
-        .drop(right_df.tconst)        \
+    return left_df.join(right_df, 'tconst') \
         .filter((left_df.titleType == 'movie')
                 & (right_df.numVotes >= 100000))
 
 
-def read_to_df(path):
+def read_to_df(spark, path):
     """
     Read dataframe
     """

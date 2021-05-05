@@ -1,16 +1,15 @@
 from pyspark.sql import functions as f
 
-import main as m
-import utilities as ut
+from utilities import join_table
 
 
-def top_actors(df):
+def top_actors(df, principals, n_basics):
     """
     Find actors
     """
-    df.orderBy(f.col('averageRating').desc(), f.col('numVotes').desc())
-    df = ut.join_table(df, m.principals, 'tconst').drop(m.principals.tconst)
-    df = ut.join_table(df, m.n_basics, 'nconst').drop(m.n_basics.nconst).where(f.col('category').like('act%'))
+    df = df.orderBy(f.col('averageRating').desc(), f.col('numVotes').desc())
+    df = join_table(df, principals, 'tconst')
+    df = join_table(df, n_basics, 'nconst').where(f.col('category').like('act%'))
 
     return df \
         .groupby('nconst', 'primaryName').count() \
