@@ -2,4 +2,3 @@ venv_spark/
 .idea/
 data/
 outputs/
-__pycache__/
