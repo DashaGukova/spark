@@ -2,6 +2,13 @@ from pyspark.sql.window import Window
 from pyspark.sql import functions as f
 
 
+def explode(column_use):
+    """
+    Explode column by one which contains many strings
+    """
+    return f.explode(f.split(f.col(column_use), ','))
+
+
 def window(column, factor_first):
     """
     Make standart window function
@@ -23,8 +30,7 @@ def standart_filter(left_df, right_df):
     Make join and filter by numVotes, titleType
     """
     return left_df.join(right_df, 'tconst') \
-        .filter((left_df.titleType == 'movie')
-                & (right_df.numVotes >= 100000))
+        .filter((left_df.titleType == 'movie') & (right_df.numVotes >= 100000))
 
 
 def read_to_df(spark, path):
