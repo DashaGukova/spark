@@ -2,6 +2,15 @@ from pyspark.sql.window import Window
 from pyspark.sql import functions as f
 
 
+def with_column(df, name_column, explode_column):
+    return df.withColumn(name_column, explode_column)
+
+
+def year_range(df):
+    decade = (df.startYear - df.startYear % 10)
+    return df.withColumn('year_range', f.concat(decade, f.lit('-'), decade + 10))
+
+
 def explode(column_use):
     """
     Explode column by one which contains many strings
@@ -14,8 +23,7 @@ def window(column, factor_first):
     Make standart window function
     """
     return Window.partitionBy(column) \
-        .orderBy(f.col(factor_first).desc(),
-                 f.col('numVotes').desc())
+        .orderBy(f.col(factor_first).desc())
 
 
 def join_table(left_df, right_df, condition, how='inner'):

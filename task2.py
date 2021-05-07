@@ -1,6 +1,6 @@
 from pyspark.sql import functions as f
 
-from utilities import window, explode
+from utilities import window
 
 
 def genres_top_films(df):
@@ -9,6 +9,6 @@ def genres_top_films(df):
     """
     return df \
         .select('tconst', 'primaryTitle', 'startYear', 'genres', 'averageRating', 'numVotes') \
-        .withColumn('genres', explode('genres')) \
-        .withColumn('row_number', f.row_number().over(window('genres', 'averageRating'))) \
-        .where(f.col('row_number') < 11)
+        .withColumn('row_number', f.row_number().over(window('genres', 'averageRating')
+                                                      .orderBy(f.col('numVotes').desc()))) \
+        .where(f.col('row_number') < 11).orderBy(f.col('row_number'))
