@@ -2,13 +2,11 @@ from pyspark.sql.window import Window
 from pyspark.sql import functions as f
 
 
-def with_column(df, name_column, explode_column):
-    return df.withColumn(name_column, explode_column)
-
-
-def year_range(df):
-    decade = (df.startYear - df.startYear % 10)
-    return df.withColumn('year_range', f.concat(decade, f.lit('-'), decade + 10))
+def explode_genres(df):
+    """
+    Make explode genres
+    """
+    return df.withColumn('genres', explode('genres'))
 
 
 def explode(column_use):
@@ -38,7 +36,7 @@ def standart_filter(left_df, right_df):
     Make join and filter by numVotes, titleType
     """
     return left_df.join(right_df, 'tconst') \
-        .filter((left_df.titleType == 'movie') & (right_df.numVotes >= 100000))
+        .filter((f.col('titleType') == 'movie') & (f.col('numVotes') >= 100000))
 
 
 def read_to_df(spark, path):
