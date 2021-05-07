@@ -9,6 +9,5 @@ def genres_top_films(df):
     """
     return df \
         .select('tconst', 'primaryTitle', 'startYear', 'genres', 'averageRating', 'numVotes') \
-        .withColumn('row_number', f.row_number().over(window('genres', 'averageRating')
-                                                      .orderBy(f.col('numVotes').desc()))) \
+        .withColumn('row_number', f.row_number().over(window('genres', 'averageRating'))) \
         .where(f.col('row_number') < 11).orderBy(f.col('row_number'))
