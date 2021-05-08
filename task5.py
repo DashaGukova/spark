@@ -11,7 +11,7 @@ def director_top_films(df, crew, n_basics):
     df = join_table(df, crew, 'tconst') \
         .withColumn('directors', explode('directors'))
     df = join_table(df, n_basics, f.col('directors') == f.col('nconst')) \
-        .withColumn('f_rank', f.dense_rank().over(window('directors', 'averageRating')))
+        .withColumn('f_rank', f.row_number().over(window('directors', 'averageRating')))
 
     return df.select('primaryName', 'primaryTitle', 'startYear', 'averageRating', 'numVotes') \
         .where(f.col('f_rank') <= 5) \
